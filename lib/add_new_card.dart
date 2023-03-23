@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'database.dart';
+import 'dart:convert';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class NewCardPage extends StatefulWidget {
   static const routeName = '/Encryptous/addCard2';
@@ -20,7 +22,7 @@ class _NewCardPageState extends State<NewCardPage> {
   OutlineInputBorder? border;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 //This passage of code is
-  void savedCardData(String cardNumber, String expiryDate,
+  /* void savedCardData(String cardNumber, String expiryDate,
       String cardHolderName, String cvvCode) async {
     final row = {
       'card_number': cardNumber,
@@ -34,6 +36,23 @@ class _NewCardPageState extends State<NewCardPage> {
         await EncryptousHelper.instance.queryAllRows(); // prints to console
     print(allRows);
 
+    print('Card saved with id: $id'); 
+  }*/
+  void savedCardData(String cardNumber, String expiryDate,
+      String cardHolderName, String cvvCode) async {
+    final key = encrypt.Key.fromLength(32);
+    final iv = encrypt.IV.fromLength(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+
+    final row = {
+      'card_number': encrypter.encrypt(cardNumber, iv: iv).base64,
+      'expiry_date': encrypter.encrypt(expiryDate, iv: iv).base64,
+      'card_holder_name': encrypter.encrypt(cardHolderName, iv: iv).base64,
+      'cvv_code': encrypter.encrypt(cvvCode, iv: iv).base64,
+    };
+    final id = await EncryptousHelper.instance.insertCard(row);
+    final allRows = await EncryptousHelper.instance.queryAllRows();
+    print(allRows);
     print('Card saved with id: $id');
   }
 

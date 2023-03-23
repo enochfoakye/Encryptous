@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/add_new_card.dart';
 
-import 'create_user.dart';
-import 'login.dart';
+import 'passcode.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/Encryptous';
@@ -82,10 +81,9 @@ class _HomePageState extends State<HomePage> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(
-                    context,
-                    NewUserPage
-                        .routeName //This is for the button pressed to navigate to the login page from home
+                Navigator.pushNamed(context, LoginPage.routeName
+
+                    //This is for the button pressed to navigate to the login page from home
                     );
               },
               child: const Text('to add User'),

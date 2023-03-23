@@ -126,6 +126,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_auth:
+    dependency: "direct main"
+    description:
+      name: flutter_auth
+      sha256: c8b60beae194b147718e3018a9321a87467b468152dc2bb6de3678898a717f65
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   flutter_credit_card:
     dependency: "direct main"
     description:
@@ -142,6 +150,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  flutter_login_template:
+    dependency: "direct main"
+    description:
+      name: flutter_login_template
+      sha256: b7c396bfd34fb1628ef30b191cb730b661bf69c6d391c8afef788c52737078cc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: c224ac897bed083dabf11f238dd11a239809b446740be0c2044608c50029ffdf
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.9"
+  flutter_screen_lock:
+    dependency: "direct main"
+    description:
+      name: flutter_screen_lock
+      sha256: "1d86191e67f8c2f09349c2d2929b6d019db213f012d577ad3b85935d22b13207"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -152,6 +184,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: a3715e3bc90294e971cb7dc063fbf3cd9ee0ebf8604ffeafabd9e6f16abbdbe6
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.0"
   js:
     dependency: transitive
     description:
@@ -168,6 +208,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  local_auth:
+    dependency: "direct main"
+    description:
+      name: local_auth
+      sha256: "0cf238be2bfa51a6c9e7e9cfc11c05ea39f2a3a4d3e5bb255d0ebc917da24401"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.6"
+  local_auth_android:
+    dependency: transitive
+    description:
+      name: local_auth_android
+      sha256: "2ccfadbb6fbc63e6674ad58a350b06188829e62669d67a0c752c4e43cb88272a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.21"
+  local_auth_ios:
+    dependency: transitive
+    description:
+      name: local_auth_ios
+      sha256: "604078f6492fe7730fc5bb8e4f2cfe2bc287a9b499ea0ff30a29925fc1873728"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
+  local_auth_platform_interface:
+    dependency: transitive
+    description:
+      name: local_auth_platform_interface
+      sha256: "9e160d59ef0743e35f1b50f4fb84dc64f55676b1b8071e319ef35e7f3bc13367"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.7"
+  local_auth_windows:
+    dependency: transitive
+    description:
+      name: local_auth_windows
+      sha256: bfe0deede77fb36faa62799977074f35ac096d7cafce0c29a44a173d2a2a4b94
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.7"
   matcher:
     dependency: transitive
     description:
@@ -260,10 +340,10 @@ packages:
     dependency: "direct main"
     description:
       name: shared_preferences
-      sha256: ee6257848f822b8481691f20c3e6d2bfee2e9eccb2a3d249907fcfb198c55b41
+      sha256: "78528fd87d0d08ffd3e69551173c026e8eacc7b7079c82eb6a77413957b7e394"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.18"
+    version: "2.0.20"
   shared_preferences_android:
     dependency: transitive
     description:
