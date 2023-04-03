@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/add_new_card.dart';
-
+import 'package:my_app/database.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'passcode.dart';
+
+import 'env.dart' as env;
 
 class HomePage extends StatefulWidget {
   static const routeName = '/Encryptous';
@@ -13,24 +16,8 @@ class HomePage extends StatefulWidget {
 
 //
 class _HomePageState extends State<HomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
@@ -58,15 +45,7 @@ class _HomePageState extends State<HomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+          children: [
             ElevatedButton(
               onPressed: () {
                 print('Hello Zaddy');
@@ -88,14 +67,49 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text('to add User'),
             ),
+            ElevatedButton(
+              onPressed: () async {
+                final rows = await EncryptousHelper.instance.queryAllRows();
+                final key = encrypt.Key.fromUtf8(
+                    env.aes_private_key); // Make this global
+                final iv = encrypt.IV.fromLength(16);
+                final encrypter = encrypt.Encrypter(encrypt.AES(key));
+
+                for (final row in rows) {
+                  print(row);
+                  try {
+                    final cardNumber =
+                        encrypter.decrypt64(row['card_number'], iv: iv);
+                    final expiryDate =
+                        encrypter.decrypt64(row['expiry_date'], iv: iv);
+                    final cardHolderName =
+                        encrypter.decrypt64(row['card_holder_name'], iv: iv);
+                    final cvvCode =
+                        encrypter.decrypt64(row['cvv_code'], iv: iv);
+
+                    print('Card Number: $cardNumber');
+                    print('Expiry Date: $expiryDate');
+                    print('Card Holder Name: $cardHolderName');
+                    print('CVV Code: $cvvCode');
+                    print('-------------------');
+                  } catch (e) {
+                    final cardNumber = "ERROR: $e";
+                    final expiryDate = "ERROR: $e";
+                    final cardHolderName = "ERROR: $e";
+                    final cvvCode = "ERROR: $e";
+                    print('Card Number: $cardNumber');
+                    print('Expiry Date: $expiryDate');
+                    print('Card Holder Name: $cardHolderName');
+                    print('CVV Code: $cvvCode');
+                    print('-------------------');
+                  }
+                }
+              },
+              child: const Text('Print all data'),
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

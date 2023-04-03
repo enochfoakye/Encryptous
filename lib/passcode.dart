@@ -13,8 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String _currentPIN = '1234';
-  String _newPin = '1234';
+  String _currentPIN = '';
 
   Future<String?> getPIN() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -31,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
     await prefs.setString('current_pin', newPIN);
 
     setState(() {
-      _newPin = newPIN;
+      _currentPIN = newPIN;
     });
   }
 
@@ -42,6 +41,12 @@ class _LoginPageState extends State<LoginPage> {
     if (didAuthenticate) {
       Navigator.pop(context);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPIN();
   }
 
   @override
@@ -62,8 +67,9 @@ class _LoginPageState extends State<LoginPage> {
                 customizedButtonChild: const Icon(Icons.fingerprint),
                 customizedButtonTap: () async => await localAuth(context),
                 onOpened: () async => await localAuth(context),
+                canCancel: false,
               ),
-              child: const Text('Enter Current Passcode'),
+              child: const Text('Enter Passcode'),
             ),
             const SizedBox(height: 16),
             ElevatedButton(

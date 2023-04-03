@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
+//import 'package:flutter_scan_tools/flutter_scan_tools.dart';
 import 'database.dart';
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'env.dart' as env;
 
 class NewCardPage extends StatefulWidget {
   static const routeName = '/Encryptous/addCard2';
@@ -21,6 +23,7 @@ class _NewCardPageState extends State<NewCardPage> {
   bool useBackgroundImage = false;
   OutlineInputBorder? border;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  //CardScanResul? _scanResult;
 //This passage of code is
   /* void savedCardData(String cardNumber, String expiryDate,
       String cardHolderName, String cvvCode) async {
@@ -40,7 +43,9 @@ class _NewCardPageState extends State<NewCardPage> {
   }*/
   void savedCardData(String cardNumber, String expiryDate,
       String cardHolderName, String cvvCode) async {
-    final key = encrypt.Key.fromLength(32);
+    //final key = encrypt.AES()
+    //final key = Key.fromUtf8('my secret key 123456');
+    final key = encrypt.Key.fromUtf8(env.aes_private_key);
     final iv = encrypt.IV.fromLength(16);
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
 
@@ -55,6 +60,16 @@ class _NewCardPageState extends State<NewCardPage> {
     print(allRows);
     print('Card saved with id: $id');
   }
+
+  //adds ocr technolology function by awaiting card scan
+  /* void _startScan() async {
+    CardScanResul? scanResult = await FlutterScanTools.scanCard(context);
+
+    setState(() {
+      _scanResult = scanResult;
+    });
+    print(_scanResult);
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +140,9 @@ class _NewCardPageState extends State<NewCardPage> {
             ),
             onCreditCardModelChange: onCreditCardModelChange,
           ),
-        ],
+        ], /*floatingActionButton(onPressed: () {
+        _startScan();
+      })),*/
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {

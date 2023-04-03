@@ -44,6 +44,7 @@ dependencies:
   flutter_login_template: ^1.1.0
   flutter_screen_lock: ^9.0.1
   local_auth: ^2.1.6
+  # flutter_scan_tools: ^0.0.3
   #firebase_ml_vision: ^0.12.0+3
   # firebase_core: ^2.7.0
 
