@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
     final String? currentPIN = prefs.getString('current_pin');
 
     setState(() {
-      _currentPIN = currentPIN!;
+      _currentPIN = _currentPIN;
     });
     return currentPIN;
   }

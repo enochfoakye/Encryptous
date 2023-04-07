@@ -5,6 +5,8 @@ import 'package:my_app/ocr.dart';
 
 import 'package:my_app/add_new_card.dart';
 
+import 'tester.dart';
+
 void main() {
   runApp(const Encryptous());
 }
@@ -20,6 +22,7 @@ class Encryptous extends StatelessWidget {
         NewCardPage.routeName: (context) => const NewCardPage(),
         LoginPage.routeName: (context) => const LoginPage(),
         OcrPage.routeName: (context) => const OcrPage(),
+        Tester.routeName: (context) => const Tester(),
       },
       home: const HomePage(),
     );

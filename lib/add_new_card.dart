@@ -1,6 +1,8 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
-//import 'package:flutter_scan_tools/flutter_scan_tools.dart';
+import 'package:flutter_scan_tools/flutter_scan_tools.dart';
 import 'database.dart';
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -15,15 +17,18 @@ class NewCardPage extends StatefulWidget {
 
 class _NewCardPageState extends State<NewCardPage> {
   String cardNumber = '';
+  String _cardNumber = '';
   String expiryDate = '';
   String cardHolderName = '';
   String cvvCode = '';
+  GlobalKey<FormFieldState<String>>? cardNumberKey;
   bool isCvvFocused = false;
   bool useGlassMorphism = false;
   bool useBackgroundImage = false;
   OutlineInputBorder? border;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  //CardScanResul? _scanResult;
+  CardScanResul? _scanResult;
+  TextEditingController _ocr = TextEditingController();
 //This passage of code is
   /* void savedCardData(String cardNumber, String expiryDate,
       String cardHolderName, String cvvCode) async {
@@ -62,14 +67,17 @@ class _NewCardPageState extends State<NewCardPage> {
   }
 
   //adds ocr technolology function by awaiting card scan
-  /* void _startScan() async {
+  void _startScan() async {
     CardScanResul? scanResult = await FlutterScanTools.scanCard(context);
 
     setState(() {
       _scanResult = scanResult;
+      cardNumber = _scanResult!.cardNumber.number;
     });
+    // onCreditCardModelChange(CreditCardModel(_scanResult!.cardNumber.number,
+    //     expiryDate, cardHolderName, cvvCode, isCvvFocused));
     print(_scanResult);
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +106,8 @@ class _NewCardPageState extends State<NewCardPage> {
             formKey: formKey,
             obscureCvv: true,
             obscureNumber: true,
-            cardNumber: cardNumber,
+            cardNumber: _cardNumber,
+            cardNumberKey: cardNumberKey,
             cvvCode: cvvCode,
             isHolderNameVisible: true,
             isCardNumberVisible: true,
@@ -108,7 +117,7 @@ class _NewCardPageState extends State<NewCardPage> {
             themeColor: Colors.blue,
             textColor: Color.fromARGB(255, 0, 0, 0),
             cardNumberDecoration: InputDecoration(
-              labelText: 'Number',
+              labelText: 'Card Number',
               hintText: 'XXXX XXXX XXXX XXXX',
               hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
@@ -120,7 +129,7 @@ class _NewCardPageState extends State<NewCardPage> {
               labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               focusedBorder: border,
               enabledBorder: border,
-              labelText: 'Expired Date',
+              labelText: 'Expiry Date',
               hintText: 'XX/XX',
             ),
             cvvCodeDecoration: InputDecoration(
@@ -136,13 +145,23 @@ class _NewCardPageState extends State<NewCardPage> {
               labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               focusedBorder: border,
               enabledBorder: border,
-              labelText: 'Card Holder',
+              labelText: 'Card Holder Name',
             ),
             onCreditCardModelChange: onCreditCardModelChange,
           ),
-        ], /*floatingActionButton(onPressed: () {
-        _startScan();
-      })),*/
+          ElevatedButton(
+            onPressed: () {
+              _startScan();
+              // try {
+              //   print(cardNumberKey!.currentState);
+              //   cardNumberKey!.currentState!.setValue(cardNumber);
+              // } catch (e) {
+              //   print("ERROR: $e \nCard Not entered");
+              // }
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
@@ -154,6 +173,7 @@ class _NewCardPageState extends State<NewCardPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Card Details saved Succesfully')),
             );
+            Navigator.pop(context);
           }
         },
         label: const Text('Save card'),
@@ -163,8 +183,10 @@ class _NewCardPageState extends State<NewCardPage> {
   }
 
   void onCreditCardModelChange(CreditCardModel? creditCardModel) {
+    print("Credit Card Model Change!");
     setState(() {
       cardNumber = creditCardModel!.cardNumber;
+      _cardNumber = creditCardModel.cardNumber;
       expiryDate = creditCardModel.expiryDate;
       cardHolderName = creditCardModel.cardHolderName;
       cvvCode = creditCardModel.cvvCode;
