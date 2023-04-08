@@ -3,7 +3,6 @@ import 'package:my_app/add_new_card.dart';
 import 'package:my_app/database.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter_credit_card/flutter_credit_card.dart';
-
 import 'env.dart' as env;
 
 class Tester extends StatefulWidget {

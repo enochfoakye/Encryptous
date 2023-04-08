@@ -48,8 +48,6 @@ class _NewCardPageState extends State<NewCardPage> {
   }*/
   void savedCardData(String cardNumber, String expiryDate,
       String cardHolderName, String cvvCode) async {
-    //final key = encrypt.AES()
-    //final key = Key.fromUtf8('my secret key 123456');
     final key = encrypt.Key.fromUtf8(env.aes_private_key);
     final iv = encrypt.IV.fromLength(16);
     final encrypter = encrypt.Encrypter(encrypt.AES(key));

@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthPage extends StatefulWidget {
   static const routeName = '/Encryptous/login';
-  const AuthPage({Key? key}) : super(key: key);
+  const AuthPage({super.key});
 
   @override
   _AuthPageState createState() => _AuthPageState();
@@ -46,23 +46,6 @@ class _AuthPageState extends State<AuthPage> {
     });
   }
 
-  // Future<void> localAuth(BuildContext context) async {
-  //   // await getPIN();
-  //   final localAuth = LocalAuthentication();
-  //   final didAuthenticate =
-  //       await localAuth.authenticate(localizedReason: 'Please authenticate');
-
-  //   if (didAuthenticate) {
-  //     setState(() {
-  //       _authenticated = true;
-  //     });
-  //     Navigator.pop(context);
-
-  //     //if (didAuthenticate) {
-  //     //
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -81,65 +64,14 @@ class _AuthPageState extends State<AuthPage> {
     // }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Passcode'),
+        title: Text('Change Passcode'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                showDialog(context, builder) {
-                  screenLock(
-                    context: context,
-                    correctString: _currentPIN,
-                    customizedButtonChild: const Icon(Icons.fingerprint),
-                    customizedButtonTap: () async => await localAuth(context),
-                    onOpened: () async => await localAuth(context),
-                    canCancel: false,
-                  );
-                }
-              },
-              child: const Text('Enter Passcode'),
-            ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => showDialog(
-                context: context,
-                builder: (context) {
-                  final TextEditingController _pinController =
-                      TextEditingController();
-                  return AlertDialog(
-                    title: const Text('Set New Passcode'),
-                    content: TextField(
-                      controller: _pinController,
-                      keyboardType: TextInputType.number,
-                      maxLength: 4,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter new passcode',
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('CANCEL'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setPIN(_pinController.text);
-                          Navigator.pop(context); // Close dialog box
-                          Navigator.pop(context); // Return to homescreen
-                        },
-                        child: const Text('SAVE'),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              child: const Text('Set New Passcode'),
-            ),
             ElevatedButton(
               onPressed: () {
                 // Define it to control the confirmation state with its own events.
@@ -147,9 +79,15 @@ class _AuthPageState extends State<AuthPage> {
                 screenLockCreate(
                   context: context,
                   inputController: controller,
-                  onConfirmed: (matchedText) => Navigator.of(context).pop(),
+                  onConfirmed: (matchedText) {
+                    Navigator.of(context).pop();
+
+                    setPIN(controller.confirmedInput);
+                    Navigator.pop(context); // Close dialog box
+                  },
                   footer: TextButton(
                     onPressed: () {
+                      //
                       // Release the confirmation state and return to the initial input state.
                       controller.unsetConfirmed();
                     },
@@ -158,21 +96,6 @@ class _AuthPageState extends State<AuthPage> {
                 );
               },
               child: const Text('Confirm mode'),
-            ),
-            ElevatedButton(
-              onPressed: () => screenLock(
-                context: context,
-                correctString: '1234',
-                customizedButtonChild: const Icon(
-                  Icons.fingerprint,
-                ),
-                customizedButtonTap: () async => await localAuth(context),
-                onOpened: () async => await localAuth(context),
-              ),
-              child: const Text(
-                'use local_auth \n(Show local_auth when opened)',
-                textAlign: TextAlign.center,
-              ),
             ),
           ],
         ),
