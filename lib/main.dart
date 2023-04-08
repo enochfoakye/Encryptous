@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/home.dart';
-import 'package:my_app/passcode.dart';
+
 import 'package:my_app/ocr.dart';
 
 import 'package:my_app/add_new_card.dart';
+import 'package:my_app/passcode.dart';
 
 import 'tester.dart';
 
@@ -20,7 +21,7 @@ class Encryptous extends StatelessWidget {
       routes: {
         HomePage.routeName: (context) => const HomePage(),
         NewCardPage.routeName: (context) => const NewCardPage(),
-        LoginPage.routeName: (context) => const LoginPage(),
+        AuthPage.routeName: (context) => const AuthPage(),
         OcrPage.routeName: (context) => const OcrPage(),
         Tester.routeName: (context) => const Tester(),
       },

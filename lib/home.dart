@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screen_lock/flutter_screen_lock.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:my_app/add_new_card.dart';
 import 'package:my_app/database.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'passcode.dart';
+import 'package:my_app/passcode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'env.dart' as env;
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
@@ -17,7 +21,30 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
+  String _currentPIN = '';
+
+  Future<void> localAuth(BuildContext context) async {
+    final localAuth = LocalAuthentication();
+    final didAuthenticate = await localAuth.authenticate(
+      localizedReason: 'Please authenticate',
+    );
+    if (didAuthenticate) {
+      Navigator.pop(context);
+      Navigator.pushNamed(context, AuthPage.routeName).then((_) => getPIN());
+    }
+  }
+
+  Future<String?> getPIN() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? currentPIN = prefs.getString('current_pin');
+
+    setState(() {
+      _currentPIN = currentPIN ?? '';
+    });
+    print("Current PIN: $_currentPIN");
+    return currentPIN;
+  }
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Chnage Passcode',
@@ -27,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     Text('NewCard',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
   ];
+
   @override
   void _onItemTapped(int index) {
     setState(() {
@@ -38,6 +66,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _cards = [];
   void initState() {
     super.initState();
+    getPIN();
     // _showCards(); // you are here
   }
 
@@ -82,23 +111,37 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<void> _buildLockScreen(BuildContext context) {
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return ScreenLock(
+            correctString: _currentPIN,
+            customizedButtonChild: const Icon(Icons.fingerprint),
+            customizedButtonTap: () async => await localAuth(context),
+            onOpened: () async => await localAuth(context),
+            onUnlocked: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AuthPage.routeName).then((_) {
+                getPIN();
+              });
+            },
+          );
+        });
+  }
+
   Widget mainMenu(index) {
     if (index == 0) {
       return Column(
         children: [
           ElevatedButton(
-            onPressed: () {
-              print('Hello ');
-            },
-            child: const Text('to Login'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, LoginPage.routeName);
+              child: const Text('CHANGE PASSCODE'),
+              onPressed: () {
+                _buildLockScreen(context);
+                // Navigator.pushNamed(context, AuthPage.routeName);
+              }
               //This is for the button pressed to navigate to the login page from home
-            },
-            child: const Text('to add User'),
-          ),
+              ),
         ],
       );
     } else if (index == 1) {

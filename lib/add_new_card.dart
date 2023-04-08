@@ -102,53 +102,63 @@ class _NewCardPageState extends State<NewCardPage> {
             onCreditCardWidgetChange:
                 (CreditCardBrand) {}, //true when you want to show cvv(back) view
           ),
-          CreditCardForm(
-            formKey: formKey,
-            obscureCvv: true,
-            obscureNumber: true,
-            cardNumber: _cardNumber,
-            cardNumberKey: cardNumberKey,
-            cvvCode: cvvCode,
-            isHolderNameVisible: true,
-            isCardNumberVisible: true,
-            isExpiryDateVisible: true,
-            cardHolderName: cardHolderName,
-            expiryDate: expiryDate,
-            themeColor: Colors.blue,
-            textColor: Color.fromARGB(255, 0, 0, 0),
-            cardNumberDecoration: InputDecoration(
-              labelText: 'Card Number',
-              hintText: 'XXXX XXXX XXXX XXXX',
-              hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              focusedBorder: border,
-              enabledBorder: border,
-            ),
-            expiryDateDecoration: InputDecoration(
-              hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              focusedBorder: border,
-              enabledBorder: border,
-              labelText: 'Expiry Date',
-              hintText: 'XX/XX',
-            ),
-            cvvCodeDecoration: InputDecoration(
-              hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              focusedBorder: border,
-              enabledBorder: border,
-              labelText: 'CVV',
-              hintText: 'XXX',
-            ),
-            cardHolderDecoration: InputDecoration(
-              hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              labelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-              focusedBorder: border,
-              enabledBorder: border,
-              labelText: 'Card Holder Name',
-            ),
-            onCreditCardModelChange: onCreditCardModelChange,
-          ),
+          Expanded(
+              flex: 1,
+              child: CreditCardForm(
+                formKey: formKey,
+                obscureCvv: true,
+                obscureNumber: true,
+                cardNumber: _cardNumber,
+                cardNumberKey: cardNumberKey,
+                cvvCode: cvvCode,
+                isHolderNameVisible: true,
+                isCardNumberVisible: true,
+                isExpiryDateVisible: true,
+                cardHolderName: cardHolderName,
+                expiryDate: expiryDate,
+                themeColor: Colors.blue,
+                textColor: Color.fromARGB(255, 0, 0, 0),
+                cardNumberDecoration: InputDecoration(
+                  labelText: 'Card Number',
+                  hintText: 'XXXX XXXX XXXX XXXX',
+                  hintStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  focusedBorder: border,
+                  enabledBorder: border,
+                ),
+                expiryDateDecoration: InputDecoration(
+                  hintStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  focusedBorder: border,
+                  enabledBorder: border,
+                  labelText: 'Expiry Date',
+                  hintText: 'XX/XX',
+                ),
+                cvvCodeDecoration: InputDecoration(
+                  hintStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  focusedBorder: border,
+                  enabledBorder: border,
+                  labelText: 'CVV',
+                  hintText: 'XXX',
+                ),
+                cardHolderDecoration: InputDecoration(
+                  hintStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  focusedBorder: border,
+                  enabledBorder: border,
+                  labelText: 'Card Holder Name',
+                ),
+                onCreditCardModelChange: onCreditCardModelChange,
+              )),
           ElevatedButton(
             onPressed: () {
               _startScan();
