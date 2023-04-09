@@ -1,6 +1,6 @@
 # Encryptous
 
-A new Flutter project.
+Mobile App that Encrypts and Stores Bank Card Details
 
 ## Getting Started
 
