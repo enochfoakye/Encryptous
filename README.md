@@ -1,4 +1,4 @@
-# my_app
+# Encryptous
 
 A new Flutter project.
 
