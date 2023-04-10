@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:local_auth/local_auth.dart';
@@ -10,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'env.dart' as env;
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 
-import 'tester.dart';
+//import 'tester.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/Encryptous';
@@ -20,20 +22,20 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+Future<void> localAuth(BuildContext context) async {
+  final localAuth = LocalAuthentication();
+  final didAuthenticate = await localAuth.authenticate(
+    localizedReason: 'Please authenticate',
+  );
+  if (didAuthenticate) {
+    Navigator.pop(context);
+    Navigator.pushNamed(context, AuthPage.routeName);
+  }
+}
+
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
   String _currentPIN = '';
-
-  Future<void> localAuth(BuildContext context) async {
-    final localAuth = LocalAuthentication();
-    final didAuthenticate = await localAuth.authenticate(
-      localizedReason: 'Please authenticate',
-    );
-    if (didAuthenticate) {
-      Navigator.pop(context);
-      Navigator.pushNamed(context, AuthPage.routeName).then((_) => getPIN());
-    }
-  }
 
   Future<String?> getPIN() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -67,6 +69,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getPIN();
+    _loadCards();
     // _showCards(); // you are here
   }
 
@@ -131,6 +134,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget mainMenu(index) {
+    //
     if (index == 0) {
       return Column(
         children: [
@@ -138,10 +142,7 @@ class _HomePageState extends State<HomePage> {
               child: const Text('CHANGE PASSCODE'),
               onPressed: () {
                 _buildLockScreen(context);
-                // Navigator.pushNamed(context, AuthPage.routeName);
-              }
-              //This is for the button pressed to navigate to the login page from home
-              ),
+              }),
         ],
       );
     } else if (index == 1) {
@@ -167,15 +168,93 @@ class _HomePageState extends State<HomePage> {
                       encrypter.decrypt64(card['card_holder_name'], iv: iv);
                   final cvvCode = encrypter.decrypt64(card['cvv_code'], iv: iv);
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: CreditCardWidget(
-                      cardNumber: cardNumber,
-                      expiryDate: expiryDate,
-                      cardHolderName: cardHolderName,
-                      cvvCode: cvvCode,
-                      showBackView: false,
-                      onCreditCardWidgetChange: (CreditCardBrand) {},
+                  return GestureDetector(
+                    onLongPress: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) {
+                          return AlertDialog(
+                            title: Text('CVV Number'),
+                            content: Text(cvvCode),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Close'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Dismissible(
+                      key: UniqueKey(),
+                      background: Container(
+                        color: Colors.red,
+                        child: const Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 16.0),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      direction: DismissDirection.startToEnd,
+                      onDismissed: (direction) async {
+                        // Prompt user before deleting the card
+                        final shouldDelete = await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text(
+                                  "Are you sure you want to delete?"),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text("Cancel"),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                ),
+                                TextButton(
+                                  child: const Text("Delete"),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (shouldDelete == true) {
+                          final db = await EncryptousHelper.instance.database;
+                          await db.delete(
+                            'cards',
+                            where: 'id = ?',
+                            whereArgs: [card['id']],
+                          );
+                          _loadCards();
+                        } else {
+                          // Card deletion is cancelled
+                          _loadCards();
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: CreditCardWidget(
+                          cardNumber: cardNumber,
+                          expiryDate: expiryDate,
+                          cardHolderName: cardHolderName,
+                          cvvCode: cvvCode,
+                          showBackView: false,
+                          obscureCardCvv: false,
+                          obscureCardNumber: false,
+                          isHolderNameVisible: true,
+                          isSwipeGestureEnabled: true,
+                          onCreditCardWidgetChange: (CreditCardBrand) {},
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -189,12 +268,27 @@ class _HomePageState extends State<HomePage> {
           child: const Icon(Icons.add),
         ),
       );
+    } else if (index == 2) {
+      return const Scaffold();
     }
+    //
+
     return const Text('lol');
   }
 }
 
+// ToDo -ocr button into form field, When user Authentication is used passcode is not changed , show the cvv number 
+
+// String readSecretKeyFromFile() {
+//   // Replace with the path to your secret key file
+//   final file = File('C:/Users/enoch/OneDrive/Documents/test.txt');
+
+//   if (!file.existsSync()) {
+//     throw Exception('Secret key file does not exist');
+//   }
+
+//   return file.readAsStringSync().trim();
+// }
 
 
-
-// ToDo  - Sort out shared preferences page , name on the card, ocr button into form field 
+  
