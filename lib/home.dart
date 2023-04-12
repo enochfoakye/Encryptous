@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _cards = [];
   void initState() {
     super.initState();
-    getPIN();
+    getPIN(); //gets the current pin
     _loadCards(); //loads the cards when the app is loaded
   }
 
@@ -345,115 +345,129 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        //creates the card widget seen at the top of the form
-        children: [
-          CreditCardWidget(
-            cardNumber: cardNumber,
-            expiryDate: expiryDate,
-            cardHolderName: cardHolderName,
-            cvvCode: cvvCode,
-            showBackView: isCvvFocused,
-            isHolderNameVisible: true,
-            onCreditCardWidgetChange:
-                (CreditCardBrand) {}, //true when you want to show cvv(back) view
-          ),
-          // creates the form underneath the card widget
-          Expanded(
-              flex: 1,
-              child: CreditCardForm(
-                formKey: formKey,
-                obscureCvv: false,
-                obscureNumber: false,
-                cardNumber: _cardNumber,
-                cardNumberKey: cardNumberKey,
-                cvvCode: cvvCode,
-                isCardNumberVisible: true,
-                isExpiryDateVisible: true,
-                cardHolderName: cardHolderName,
-                expiryDate: expiryDate,
-                themeColor: Colors.blue,
-                textColor: Color.fromARGB(255, 0, 0, 0),
-                cardNumberDecoration: InputDecoration(
-                  labelText: 'Card Number',
-                  hintText: 'XXXX XXXX XXXX XXXX',
-                  hintStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  labelStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  focusedBorder: border,
-                  enabledBorder: border,
+      return Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          //creates the card widget seen at the top of the form
+          children: [
+            CreditCardWidget(
+              cardNumber: cardNumber,
+              expiryDate: expiryDate,
+              cardHolderName: cardHolderName,
+              cvvCode: cvvCode,
+              showBackView: isCvvFocused,
+              isHolderNameVisible: true,
+              onCreditCardWidgetChange:
+                  (CreditCardBrand) {}, //true when you want to show cvv(back) view
+            ),
+            // creates the form underneath the card widget
+            Expanded(
+                flex: 1,
+                child: CreditCardForm(
+                  formKey: formKey,
+                  obscureCvv: false,
+                  obscureNumber: false,
+                  cardNumber: _cardNumber,
+                  cardNumberKey: cardNumberKey,
+                  cvvCode: cvvCode,
+                  isCardNumberVisible: true,
+                  isExpiryDateVisible: true,
+                  cardHolderName: cardHolderName,
+                  expiryDate: expiryDate,
+                  themeColor: Colors.blue,
+                  textColor: Color.fromARGB(255, 0, 0, 0),
+                  cardNumberDecoration: InputDecoration(
+                    labelText: 'Card Number',
+                    hintText: 'XXXX XXXX XXXX XXXX',
+                    hintStyle:
+                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    labelStyle:
+                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    focusedBorder: border,
+                    enabledBorder: border,
+                  ),
+                  expiryDateDecoration: InputDecoration(
+                    hintStyle:
+                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    labelStyle:
+                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    focusedBorder: border,
+                    enabledBorder: border,
+                    labelText: 'Expiry Date',
+                    hintText: 'XX/XX',
+                  ),
+                  cvvCodeDecoration: InputDecoration(
+                    hintStyle:
+                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    labelStyle:
+                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    focusedBorder: border,
+                    enabledBorder: border,
+                    labelText: 'CVV',
+                    hintText: 'XXX',
+                  ),
+                  cardHolderDecoration: InputDecoration(
+                    hintStyle:
+                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    labelStyle:
+                        const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                    focusedBorder: border,
+                    enabledBorder: border,
+                    labelText: 'Card Holder Name',
+                  ),
+                  onCreditCardModelChange: onCreditCardModelChange,
+                )),
+            //Button for the ocr functunality
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    _startScan();
+                  },
+                  icon: Icon(Icons.camera_alt),
+                  iconSize: 40,
+                  color: Colors.blue,
                 ),
-                expiryDateDecoration: InputDecoration(
-                  hintStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  labelStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  focusedBorder: border,
-                  enabledBorder: border,
-                  labelText: 'Expiry Date',
-                  hintText: 'XX/XX',
-                ),
-                cvvCodeDecoration: InputDecoration(
-                  hintStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  labelStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  focusedBorder: border,
-                  enabledBorder: border,
-                  labelText: 'CVV',
-                  hintText: 'XXX',
-                ),
-                cardHolderDecoration: InputDecoration(
-                  hintStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  labelStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  focusedBorder: border,
-                  enabledBorder: border,
-                  labelText: 'Card Holder Name',
-                ),
-                onCreditCardModelChange: onCreditCardModelChange,
-              )),
-          //Button for the ocr functunality
-          ElevatedButton(
-            onPressed: () {
-              _startScan();
-              // try {
-              //   print(cardNumberKey!.currentState);
-              //   cardNumberKey!.currentState!.setValue(cardNumber);
-              // } catch (e) {
-              //   print("ERROR: $e \nCard Not entered");
-              // }
-            },
-            child: const Icon(Icons.add),
-          ),
-          //button to save user input and print to the console to check
-          ElevatedButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                print(
-                    'Card saved: $cardNumber, $expiryDate, $cardHolderName, $cvvCode');
+                FloatingActionButton.extended(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      print(
+                          'Card saved: $cardNumber, $expiryDate, $cardHolderName, $cvvCode');
 
-                savedCardData(cardNumber, expiryDate, cardHolderName, cvvCode);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Card Details saved Successfully')),
-                );
-                Navigator.pushNamed(context, HomePage.routeName).then((_) {
-                  _loadCards();
-                });
-              }
-            },
-            child: const Text('Save card'),
-            // icon: const Icon(Icons.save),
-          ),
-        ],
-      ); // Column ends here
+                      savedCardData(
+                          cardNumber, expiryDate, cardHolderName, cvvCode);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Card Details saved Succesfully')),
+                      );
+
+                      Navigator.pushNamed(context, HomePage.routeName)
+                          .then((_) {
+                        _loadCards();
+                      });
+                    }
+                  },
+                  backgroundColor: Colors.blue,
+                  label:
+                      const Text('Save card', style: TextStyle(fontSize: 18)),
+                  icon: const Icon(Icons.save),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    side: BorderSide(color: Colors.white, width: 2),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
     }
   }
 }
+
+
+
 
 // ToDo -ocr button into form field, When user Authentication is used passcode is not changed ,  move add card page to bottom nav
 

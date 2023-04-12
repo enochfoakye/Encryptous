@@ -40,7 +40,7 @@ class Encryptous extends StatelessWidget {
   }
 }
 
-// ToDo -ocr button into form field, When user Authentication is used passcode is not changed ,  have user confirm password after inputting data
+// ToDo -ocr button into form field, have user confirm password after inputting data
 
 // Future<void> _buildLockScreen(BuildContext context) {
 //   return showDialog<void>(
