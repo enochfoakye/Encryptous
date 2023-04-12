@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_scan_tools/flutter_scan_tools.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:my_app/add_new_card.dart';
@@ -34,6 +35,50 @@ Future<void> localAuth(BuildContext context) async {
 }
 
 class _HomePageState extends State<HomePage> {
+  String cardNumber = '';
+  String _cardNumber = '';
+  String expiryDate = '';
+  String cardHolderName = '';
+  String cvvCode = '';
+  GlobalKey<FormFieldState<String>>? cardNumberKey;
+  bool isCvvFocused = false;
+  bool useGlassMorphism = false;
+  bool useBackgroundImage = false;
+  OutlineInputBorder? border;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  CardScanResul? _scanResult;
+
+  void savedCardData(String cardNumber, String expiryDate,
+      String cardHolderName, String cvvCode) async {
+    final key = encrypt.Key.fromUtf8(env.aes_private_key);
+    final iv = encrypt.IV.fromLength(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+
+    final row = {
+      'card_number': encrypter.encrypt(cardNumber, iv: iv).base64,
+      'expiry_date': encrypter.encrypt(expiryDate, iv: iv).base64,
+      'card_holder_name': encrypter.encrypt(cardHolderName, iv: iv).base64,
+      'cvv_code': encrypter.encrypt(cvvCode, iv: iv).base64,
+    };
+    final id = await EncryptousHelper.instance.insertCard(row);
+    final allRows = await EncryptousHelper.instance.queryAllRows();
+    print(allRows);
+    print('Card saved with id: $id');
+  }
+
+  //adds ocr technolology function by awaiting card scan
+  void _startScan() async {
+    CardScanResul? scanResult = await FlutterScanTools.scanCard(context);
+
+    setState(() {
+      _scanResult = scanResult;
+      cardNumber = _scanResult!.cardNumber.number;
+    });
+    // onCreditCardModelChange(CreditCardModel(_scanResult!.cardNumber.number,
+    //     expiryDate, cardHolderName, cvvCode, isCvvFocused));
+    print(_scanResult);
+  }
+
   int _selectedIndex = 1;
   String _currentPIN = '';
 
@@ -77,6 +122,18 @@ class _HomePageState extends State<HomePage> {
     final cards = await EncryptousHelper.instance.queryAllRows();
     setState(() {
       _cards = cards;
+    });
+  }
+
+  void onCreditCardModelChange(CreditCardModel? creditCardModel) {
+    print("Credit Card Model Change!");
+    setState(() {
+      cardNumber = creditCardModel!.cardNumber;
+      _cardNumber = creditCardModel.cardNumber;
+      expiryDate = creditCardModel.expiryDate;
+      cardHolderName = creditCardModel.cardHolderName;
+      cvvCode = creditCardModel.cvvCode;
+      isCvvFocused = creditCardModel.isCvvFocused;
     });
   }
 
@@ -137,12 +194,32 @@ class _HomePageState extends State<HomePage> {
     //
     if (index == 0) {
       return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton(
-              child: const Text('CHANGE PASSCODE'),
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromRGBO(
+                    55, 71, 79, 1), // Change background color to dark blue-grey
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      30), // Increase border radius to make it more rounded
+                ),
+                elevation: 6, // Reduce elevation to make it less 3D
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                textStyle: const TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                      FontWeight.w600, // Use a slightly lighter font weight
+                ),
+              ),
               onPressed: () {
                 _buildLockScreen(context);
-              }),
+              },
+              child: const Text('CHANGE PASSCODE'),
+            ),
+          ),
         ],
       );
     } else if (index == 1) {
@@ -181,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('Close'),
+                                child: const Text('Close'),
                               ),
                             ],
                           );
@@ -268,16 +345,120 @@ class _HomePageState extends State<HomePage> {
           child: const Icon(Icons.add),
         ),
       );
-    } else if (index == 2) {
-      return const Scaffold();
-    }
-    //
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        //creates the card widget seen at the top of the form
+        children: [
+          CreditCardWidget(
+            cardNumber: cardNumber,
+            expiryDate: expiryDate,
+            cardHolderName: cardHolderName,
+            cvvCode: cvvCode,
+            showBackView: isCvvFocused,
+            isHolderNameVisible: true,
+            onCreditCardWidgetChange:
+                (CreditCardBrand) {}, //true when you want to show cvv(back) view
+          ),
+          // creates the form underneath the card widget
+          Expanded(
+              flex: 1,
+              child: CreditCardForm(
+                formKey: formKey,
+                obscureCvv: false,
+                obscureNumber: false,
+                cardNumber: _cardNumber,
+                cardNumberKey: cardNumberKey,
+                cvvCode: cvvCode,
+                isCardNumberVisible: true,
+                isExpiryDateVisible: true,
+                cardHolderName: cardHolderName,
+                expiryDate: expiryDate,
+                themeColor: Colors.blue,
+                textColor: Color.fromARGB(255, 0, 0, 0),
+                cardNumberDecoration: InputDecoration(
+                  labelText: 'Card Number',
+                  hintText: 'XXXX XXXX XXXX XXXX',
+                  hintStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  focusedBorder: border,
+                  enabledBorder: border,
+                ),
+                expiryDateDecoration: InputDecoration(
+                  hintStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  focusedBorder: border,
+                  enabledBorder: border,
+                  labelText: 'Expiry Date',
+                  hintText: 'XX/XX',
+                ),
+                cvvCodeDecoration: InputDecoration(
+                  hintStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  focusedBorder: border,
+                  enabledBorder: border,
+                  labelText: 'CVV',
+                  hintText: 'XXX',
+                ),
+                cardHolderDecoration: InputDecoration(
+                  hintStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle:
+                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  focusedBorder: border,
+                  enabledBorder: border,
+                  labelText: 'Card Holder Name',
+                ),
+                onCreditCardModelChange: onCreditCardModelChange,
+              )),
+          //Button for the ocr functunality
+          ElevatedButton(
+            onPressed: () {
+              _startScan();
+              // try {
+              //   print(cardNumberKey!.currentState);
+              //   cardNumberKey!.currentState!.setValue(cardNumber);
+              // } catch (e) {
+              //   print("ERROR: $e \nCard Not entered");
+              // }
+            },
+            child: const Icon(Icons.add),
+          ),
+//button to save user input and print to the console to check
+          ElevatedButton(
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                print(
+                    'Card saved: $cardNumber, $expiryDate, $cardHolderName, $cvvCode');
 
-    return const Text('lol');
+                savedCardData(cardNumber, expiryDate, cardHolderName, cvvCode);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Card Details saved Successfully')),
+                );
+                Navigator.pushNamed(context, HomePage.routeName).then((_) {
+                  _loadCards();
+                });
+              }
+            },
+            child: const Text('Save card'),
+            // icon: const Icon(Icons.save),
+          ),
+        ],
+      ); // Column ends here
+    }
   }
 }
 
-// ToDo -ocr button into form field, When user Authentication is used passcode is not changed , show the cvv number 
+
+
+// ToDo -ocr button into form field, When user Authentication is used passcode is not changed ,  move add card page to bottom nav 
 
 // String readSecretKeyFromFile() {
 //   // Replace with the path to your secret key file
@@ -289,6 +470,3 @@ class _HomePageState extends State<HomePage> {
 
 //   return file.readAsStringSync().trim();
 // }
-
-
-  

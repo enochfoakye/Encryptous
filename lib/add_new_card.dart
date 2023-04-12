@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_protected_member
-
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:flutter_scan_tools/flutter_scan_tools.dart';
@@ -16,6 +14,7 @@ class NewCardPage extends StatefulWidget {
 }
 
 class _NewCardPageState extends State<NewCardPage> {
+  //Creating Variables for the Credit Card form
   String cardNumber = '';
   String _cardNumber = '';
   String expiryDate = '';
@@ -29,23 +28,8 @@ class _NewCardPageState extends State<NewCardPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   CardScanResul? _scanResult;
   TextEditingController _ocr = TextEditingController();
-//This passage of code is
-  /* void savedCardData(String cardNumber, String expiryDate,
-      String cardHolderName, String cvvCode) async {
-    final row = {
-      'card_number': cardNumber,
-      'expiry_date': expiryDate,
-      'card_holder_name': cardHolderName,
-      'cvv_code': cvvCode,
-    };
-    final id =
-        await EncryptousHelper.instance.insertCard(row); //goes to database
-    final allRows =
-        await EncryptousHelper.instance.queryAllRows(); // prints to console
-    print(allRows);
 
-    print('Card saved with id: $id'); 
-  }*/
+  //Creates function that encrypts user input into form before storing into a databse
   void savedCardData(String cardNumber, String expiryDate,
       String cardHolderName, String cvvCode) async {
     final key = encrypt.Key.fromUtf8(env.aes_private_key);
@@ -82,14 +66,11 @@ class _NewCardPageState extends State<NewCardPage> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text('Encryptous'),
+        title: const Text('Add New Card'),
       ),
-      // All body code (e.g. widgets) go after body:
-
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        //creates the card widget seen at the top of the form
         children: [
           CreditCardWidget(
             cardNumber: cardNumber,
@@ -97,19 +78,20 @@ class _NewCardPageState extends State<NewCardPage> {
             cardHolderName: cardHolderName,
             cvvCode: cvvCode,
             showBackView: isCvvFocused,
+            isHolderNameVisible: true,
             onCreditCardWidgetChange:
                 (CreditCardBrand) {}, //true when you want to show cvv(back) view
           ),
+          // creates the form underneath the card widget
           Expanded(
               flex: 1,
               child: CreditCardForm(
                 formKey: formKey,
-                obscureCvv: true,
-                obscureNumber: true,
+                obscureCvv: false,
+                obscureNumber: false,
                 cardNumber: _cardNumber,
                 cardNumberKey: cardNumberKey,
                 cvvCode: cvvCode,
-                isHolderNameVisible: true,
                 isCardNumberVisible: true,
                 isExpiryDateVisible: true,
                 cardHolderName: cardHolderName,
@@ -157,6 +139,7 @@ class _NewCardPageState extends State<NewCardPage> {
                 ),
                 onCreditCardModelChange: onCreditCardModelChange,
               )),
+          //Button for the ocr functunality
           ElevatedButton(
             onPressed: () {
               _startScan();
@@ -171,6 +154,7 @@ class _NewCardPageState extends State<NewCardPage> {
           ),
         ],
       ),
+      //button to save user input and print to the console to check
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           if (formKey.currentState!.validate()) {
@@ -190,6 +174,7 @@ class _NewCardPageState extends State<NewCardPage> {
     );
   }
 
+// to view credit card changes
   void onCreditCardModelChange(CreditCardModel? creditCardModel) {
     print("Credit Card Model Change!");
     setState(() {
@@ -202,3 +187,21 @@ class _NewCardPageState extends State<NewCardPage> {
     });
   }
 }
+
+//First Fiunction created to save card
+/* void savedCardData(String cardNumber, String expiryDate,
+      String cardHolderName, String cvvCode) async {
+    final row = {
+      'card_number': cardNumber,
+      'expiry_date': expiryDate,
+      'card_holder_name': cardHolderName,
+      'cvv_code': cvvCode,
+    };
+    final id =
+        await EncryptousHelper.instance.insertCard(row); //goes to database
+    final allRows =
+        await EncryptousHelper.instance.queryAllRows(); // prints to console
+    print(allRows);
+
+    print('Card saved with id: $id'); 
+  }*/

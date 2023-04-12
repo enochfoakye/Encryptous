@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+// Creates the databse whic card form input will go into
 class EncryptousHelper {
   static final EncryptousHelper instance = EncryptousHelper._init();
 
