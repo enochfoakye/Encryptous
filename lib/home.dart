@@ -23,17 +23,6 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-Future<void> localAuth(BuildContext context) async {
-  final localAuth = LocalAuthentication();
-  final didAuthenticate = await localAuth.authenticate(
-    localizedReason: 'Please authenticate',
-  );
-  if (didAuthenticate) {
-    Navigator.pop(context);
-    Navigator.pushNamed(context, AuthPage.routeName);
-  }
-}
-
 class _HomePageState extends State<HomePage> {
   String cardNumber = '';
   String _cardNumber = '';
@@ -47,6 +36,17 @@ class _HomePageState extends State<HomePage> {
   OutlineInputBorder? border;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   CardScanResul? _scanResult;
+
+  Future<void> localAuth(BuildContext context) async {
+    final localAuth = LocalAuthentication();
+    final didAuthenticate = await localAuth.authenticate(
+      localizedReason: 'Please authenticate',
+    );
+    if (didAuthenticate) {
+      Navigator.pop(context);
+      Navigator.pushNamed(context, AuthPage.routeName).then((_) => getPIN());
+    }
+  }
 
   void savedCardData(String cardNumber, String expiryDate,
       String cardHolderName, String cvvCode) async {
@@ -114,8 +114,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getPIN();
-    _loadCards();
-    // _showCards(); // you are here
+    _loadCards(); //loads the cards when the app is loaded
   }
 
   Future<void> _loadCards() async {
@@ -430,7 +429,7 @@ class _HomePageState extends State<HomePage> {
             },
             child: const Icon(Icons.add),
           ),
-//button to save user input and print to the console to check
+          //button to save user input and print to the console to check
           ElevatedButton(
             onPressed: () async {
               if (formKey.currentState!.validate()) {
@@ -456,9 +455,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
-
-// ToDo -ocr button into form field, When user Authentication is used passcode is not changed ,  move add card page to bottom nav 
+// ToDo -ocr button into form field, When user Authentication is used passcode is not changed ,  move add card page to bottom nav
 
 // String readSecretKeyFromFile() {
 //   // Replace with the path to your secret key file

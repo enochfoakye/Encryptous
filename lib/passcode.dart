@@ -25,11 +25,10 @@ class _AuthPageState extends State<AuthPage> {
     );
     if (didAuthenticate) {
       Navigator.pop(context);
-      print(getPIN());
     }
   }
 
-  //Using shared preferences to geet user input pin
+  //Using shared preferences to get user input pin
   Future<String?> getPIN() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? currentPIN = prefs.getString('current_pin');
