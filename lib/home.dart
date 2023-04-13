@@ -5,14 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_scan_tools/flutter_scan_tools.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:my_app/add_new_card.dart';
 import 'package:my_app/database.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:my_app/passcode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'env.dart' as env;
 import 'package:flutter_credit_card/flutter_credit_card.dart';
+
+import 'expiry.dart';
 
 //import 'tester.dart';
 
@@ -47,6 +47,49 @@ class _HomePageState extends State<HomePage> {
     _cvvController.dispose();
     _cardHolderNameController.dispose();
     super.dispose();
+  }
+
+  /// Convert the two-digit year to four-digit year if necessary
+  static int convertYearTo4Digits(int year) {
+    if (year < 100 && year >= 0) {
+      var now = DateTime.now();
+      String currentYear = now.year.toString();
+      String prefix = currentYear.substring(0, currentYear.length - 2);
+      year = int.parse('$prefix${year.toString().padLeft(2, '0')}');
+    }
+    return year;
+  }
+
+  static bool hasDateExpired(int month, int year) {
+    return isNotExpired(year, month);
+  }
+
+  static bool isNotExpired(int year, int month) {
+    // It has not expired if both the year and date has not passed
+    return !hasYearPassed(year) && !hasMonthPassed(year, month);
+  }
+
+  static List<int> getExpiryDate(String value) {
+    var split = value.split(RegExp(r'(/)'));
+    return [int.parse(split[0]), int.parse(split[1])];
+  }
+
+  static bool hasMonthPassed(int year, int month) {
+    var now = DateTime.now();
+    // The month has passed if:
+    // 1. The year is in the past. In that case, we just assume that the month
+    // has passed
+    // 2. Card's month (plus another month) is more than current month.
+    return hasYearPassed(year) ||
+        convertYearTo4Digits(year) == now.year && (month < now.month + 1);
+  }
+
+  static bool hasYearPassed(int year) {
+    int fourDigitsYear = convertYearTo4Digits(year);
+    var now = DateTime.now();
+    // The year has passed if the year we are currently is more than card's
+    // year
+    return fourDigitsYear < now.year;
   }
 
   Future<void> localAuth(BuildContext context) async {
@@ -200,9 +243,9 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  Widget mainMenu(index) {
+  Widget mainMenu(menuIndex) {
     //
-    if (index == 0) {
+    if (menuIndex == 0) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -232,7 +275,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       );
-    } else if (index == 1) {
+    } else if (menuIndex == 1) {
       // Middle button
       return Scaffold(
         body: _cards.isEmpty
@@ -261,7 +304,7 @@ class _HomePageState extends State<HomePage> {
                         context: context,
                         builder: (_) {
                           return AlertDialog(
-                            title: Text('CVV Number'),
+                            title: const Text('CVV Number'),
                             content: Text(cvvCode),
                             actions: [
                               TextButton(
@@ -346,14 +389,6 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     Navigator.pushNamed(context, NewCardPage.routeName).then((_) {
-        //       _loadCards();
-        //     });
-        //   },
-        //   child: const Icon(Icons.add),
-        // ),
       );
     } else {
       return Scaffold(
@@ -400,9 +435,11 @@ class _HomePageState extends State<HomePage> {
                                 cardNumber = value;
                               }));
                             },
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value!.isEmpty || value.length != 16) {
-                                return 'Please Enter Valid Number';
+                                return 'Please Enter Valid Card Number';
                               }
                               return null;
                             },
@@ -425,13 +462,30 @@ class _HomePageState extends State<HomePage> {
                                     TextFormField(
                                       controller: _expiryDateController,
                                       keyboardType: TextInputType.datetime,
+                                      inputFormatters: [
+                                        CardMonthInputFormatter()
+                                      ],
                                       maxLength:
                                           5, // changed maxLength from 4 to 5 to include the '/' separator
                                       onChanged: (value) {
                                         setState((() {
                                           expiryDate = value;
+
+                                          if (_expiryDateController.text
+                                              .startsWith(RegExp('[2-9]'))) {
+                                            _expiryDateController.text =
+                                                '0${_expiryDateController.text}';
+                                            _expiryDateController.selection =
+                                                TextSelection.fromPosition(
+                                              TextPosition(
+                                                  offset: _expiryDateController
+                                                      .text.length),
+                                            );
+                                          }
                                         }));
                                       },
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
                                       validator: (value) {
                                         if (value!.isEmpty ||
                                             value.length != 5) {
@@ -439,7 +493,7 @@ class _HomePageState extends State<HomePage> {
                                         }
                                         final monthYear = value.split('/');
                                         if (monthYear.length != 2) {
-                                          return 'Please Enter Valid Number';
+                                          return ' MM/YY Format Needed';
                                         }
                                         final month =
                                             int.tryParse(monthYear[0]);
@@ -448,14 +502,18 @@ class _HomePageState extends State<HomePage> {
                                           return 'Please Enter Valid Number';
                                         }
                                         if (month < 1 || month > 12) {
-                                          return 'Please enter a valid month (1-12)';
+                                          return 'Invalid Month';
                                         }
-                                        final now = DateTime.now();
-                                        final expiryDate =
-                                            DateTime(now.year + year, month, 1);
-
-                                        if (expiryDate.isBefore(now)) {
-                                          return 'Card has expired';
+                                        var fourDigitsYear =
+                                            convertYearTo4Digits(year);
+                                        if ((fourDigitsYear < 1) ||
+                                            (fourDigitsYear > 2099)) {
+                                          // We are assuming a valid should be between 1 and 2099.
+                                          // Note that, it's valid doesn't mean that it has not expired.
+                                          return 'Expiry year is invalid';
+                                        }
+                                        if (!hasDateExpired(month, year)) {
+                                          return "Card has expired";
                                         }
                                         return null;
                                       },
@@ -463,19 +521,6 @@ class _HomePageState extends State<HomePage> {
                                       decoration: const InputDecoration(
                                         hintText: 'MM/YY',
                                       ),
-                                      // onChanged: (String value) {
-                                      //   if (_expiryDateController.text
-                                      //       .startsWith(RegExp('[2-9]'))) {
-                                      //     _expiryDateController.text =
-                                      //         '0${_expiryDateController.text}';
-                                      //     _expiryDateController.selection =
-                                      //         TextSelection.fromPosition(
-                                      //       TextPosition(
-                                      //           offset: _expiryDateController
-                                      //               .text.length),
-                                      //     );
-                                      //   }
-                                      // },
                                     ),
                                   ],
                                 ),
@@ -503,6 +548,8 @@ class _HomePageState extends State<HomePage> {
                                           cvvCode = value;
                                         }));
                                       },
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return 'Please enter the CVV';
@@ -512,7 +559,7 @@ class _HomePageState extends State<HomePage> {
                                           return 'CVV should be 3 or 4 digits';
                                         }
 
-                                        return null; // return null if input is valid
+                                        return null;
                                       },
                                     ),
                                   ],
@@ -534,6 +581,14 @@ class _HomePageState extends State<HomePage> {
                               setState((() {
                                 cardHolderName = value;
                               }));
+                            },
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please Insert a Name';
+                              }
+                              return null;
                             },
                           ),
 
@@ -564,11 +619,14 @@ class _HomePageState extends State<HomePage> {
                                           content: Text(
                                               'Card Details saved Succesfully')),
                                     );
-                                    Navigator.pushNamed(
-                                            context, HomePage.routeName)
-                                        .then((_) {
-                                      _loadCards();
-                                    });
+
+                                    _selectedIndex = 1;
+                                    _loadCards();
+                                    //_formKey.currentState?.reset();
+                                    _cardNumberController.clear();
+                                    _expiryDateController.clear();
+                                    _cvvController.clear();
+                                    _cardHolderNameController.clear();
                                   }
                                 },
                                 backgroundColor: Colors.blue,
@@ -595,13 +653,10 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-
-
-
 // ToDo -ocr button into form field, When user Authentication is used passcode is not changed ,  move add card page to bottom nav  Navigator.pushNamed(context, HomePage.routeName)
-                       //   .then((_) {
-                       // _loadCards();
-                     // });
+//   .then((_) {
+// _loadCards();
+// });
 
 // String readSecretKeyFromFile() {
 //   // Replace with the path to your secret key file

@@ -3,13 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:my_app/home.dart';
-
-import 'package:my_app/ocr.dart';
-
-import 'package:my_app/add_new_card.dart';
 import 'package:my_app/passcode.dart';
-
-import 'tester.dart';
 
 //User authenticate before app is launched
 Future<void> main() async {
@@ -31,9 +25,7 @@ class Encryptous extends StatelessWidget {
     return MaterialApp(
       routes: {
         HomePage.routeName: (context) => const HomePage(),
-        //  NewCardPage.routeName: (context) => const NewCardPage(),
         AuthPage.routeName: (context) => const AuthPage(),
-        OcrPage.routeName: (context) => const OcrPage(),
       },
       home: const HomePage(),
     );
