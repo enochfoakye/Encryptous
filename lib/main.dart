@@ -40,7 +40,7 @@ class Encryptous extends StatelessWidget {
   }
 }
 
-// ToDo -ocr button into form field, have user confirm password after inputting data
+// ToDo -ocr button into form field, have user confirm password after inputting data,fix overflow , change buttons on add new card page
 
 // Future<void> _buildLockScreen(BuildContext context) {
 //   return showDialog<void>(

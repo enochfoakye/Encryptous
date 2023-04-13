@@ -245,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                   final cvvCode = encrypter.decrypt64(card['cvv_code'], iv: iv);
 
                   return GestureDetector(
-                    onLongPress: () {
+                    onTap: () {
                       showDialog(
                         context: context,
                         builder: (_) {
@@ -346,24 +346,31 @@ class _HomePageState extends State<HomePage> {
       );
     } else {
       return Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          //creates the card widget seen at the top of the form
-          children: [
-            CreditCardWidget(
-              cardNumber: cardNumber,
-              expiryDate: expiryDate,
-              cardHolderName: cardHolderName,
-              cvvCode: cvvCode,
-              showBackView: isCvvFocused,
-              isHolderNameVisible: true,
-              onCreditCardWidgetChange:
-                  (CreditCardBrand) {}, //true when you want to show cvv(back) view
-            ),
-            // creates the form underneath the card widget
-            Expanded(
-                flex: 1,
-                child: CreditCardForm(
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+          child: Container(
+            // height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            // padding: EdgeInsets.only(
+            //   bottom: MediaQuery.of(context).viewInsets.bottom,
+            // ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              //creates the card widget seen at the top of the form
+              children: [
+                CreditCardWidget(
+                  cardNumber: cardNumber,
+                  expiryDate: expiryDate,
+                  cardHolderName: cardHolderName,
+                  cvvCode: cvvCode,
+                  showBackView: isCvvFocused,
+                  isHolderNameVisible: true,
+                  onCreditCardWidgetChange:
+                      (CreditCardBrand) {}, //true when you want to show cvv(back) view
+                ),
+                // creates the form underneath the card widget
+
+                CreditCardForm(
                   formKey: formKey,
                   obscureCvv: false,
                   obscureNumber: false,
@@ -416,50 +423,53 @@ class _HomePageState extends State<HomePage> {
                     labelText: 'Card Holder Name',
                   ),
                   onCreditCardModelChange: onCreditCardModelChange,
-                )),
-            //Button for the ocr functunality
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    _startScan();
-                  },
-                  icon: Icon(Icons.camera_alt),
-                  iconSize: 40,
-                  color: Colors.blue,
                 ),
-                FloatingActionButton.extended(
-                  onPressed: () async {
-                    if (formKey.currentState!.validate()) {
-                      print(
-                          'Card saved: $cardNumber, $expiryDate, $cardHolderName, $cvvCode');
+                //Button for the ocr functunality
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        _startScan();
+                      },
+                      icon: Icon(Icons.camera_alt),
+                      iconSize: 40,
+                      color: Colors.blue,
+                    ),
+                    FloatingActionButton.extended(
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          print(
+                              'Card saved: $cardNumber, $expiryDate, $cardHolderName, $cvvCode');
 
-                      savedCardData(
-                          cardNumber, expiryDate, cardHolderName, cvvCode);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Card Details saved Succesfully')),
-                      );
+                          savedCardData(
+                              cardNumber, expiryDate, cardHolderName, cvvCode);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('Card Details saved Succesfully')),
+                          );
 
-                      Navigator.pushNamed(context, HomePage.routeName)
-                          .then((_) {
-                        _loadCards();
-                      });
-                    }
-                  },
-                  backgroundColor: Colors.blue,
-                  label:
-                      const Text('Save card', style: TextStyle(fontSize: 18)),
-                  icon: const Icon(Icons.save),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    side: BorderSide(color: Colors.white, width: 2),
-                  ),
+                          Navigator.pushNamed(context, HomePage.routeName)
+                              .then((_) {
+                            _loadCards();
+                          });
+                        }
+                      },
+                      backgroundColor: Colors.blue,
+                      label: const Text('Save card',
+                          style: TextStyle(fontSize: 18)),
+                      icon: const Icon(Icons.save),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        side: const BorderSide(color: Colors.white, width: 2),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       );
     }
@@ -469,7 +479,10 @@ class _HomePageState extends State<HomePage> {
 
 
 
-// ToDo -ocr button into form field, When user Authentication is used passcode is not changed ,  move add card page to bottom nav
+// ToDo -ocr button into form field, When user Authentication is used passcode is not changed ,  move add card page to bottom nav  Navigator.pushNamed(context, HomePage.routeName)
+                       //   .then((_) {
+                       // _loadCards();
+                     // });
 
 // String readSecretKeyFromFile() {
 //   // Replace with the path to your secret key file
