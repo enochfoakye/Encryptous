@@ -31,7 +31,7 @@ class Encryptous extends StatelessWidget {
     return MaterialApp(
       routes: {
         HomePage.routeName: (context) => const HomePage(),
-        NewCardPage.routeName: (context) => const NewCardPage(),
+        //  NewCardPage.routeName: (context) => const NewCardPage(),
         AuthPage.routeName: (context) => const AuthPage(),
         OcrPage.routeName: (context) => const OcrPage(),
       },
@@ -40,7 +40,7 @@ class Encryptous extends StatelessWidget {
   }
 }
 
-// ToDo -ocr button into form field, have user confirm password after inputting data,fix overflow , change buttons on add new card page
+// ToDo -ocr button into form field, have user confirm password after inputting data,
 
 // Future<void> _buildLockScreen(BuildContext context) {
 //   return showDialog<void>(
