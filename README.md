@@ -13,7 +13,7 @@ A few resources to get you started if this is your first Flutter project:
 - 
 
 
-https://user-images.githubusercontent.com/57646453/234319751-24cc853d-7207-4b39-946f-62b7fbcd5bbe.mp4
+
 
 
 For help getting started with Flutter development, view the
