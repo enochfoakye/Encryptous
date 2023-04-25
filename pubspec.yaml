@@ -46,9 +46,13 @@ dependencies:
   local_auth: ^2.1.6
   flutter_scan_tools: ^0.0.3
   flutter_secure_storage: ^8.0.0
+  flutter_launcher_icons: ^0.13.1
   #firebase_ml_vision: ^0.12.0+3
   # firebase_core: ^2.7.0
-
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "asset/icons/encryptous.png"
 dev_dependencies:
   flutter_test:
     sdk: flutter

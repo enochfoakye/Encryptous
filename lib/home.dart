@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_scan_tools/flutter_scan_tools.dart';
@@ -11,10 +10,7 @@ import 'package:my_app/passcode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'env.dart' as env;
 import 'package:flutter_credit_card/flutter_credit_card.dart';
-
 import 'expiry.dart';
-
-//import 'tester.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/Encryptous';
@@ -26,7 +22,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String cardNumber = '';
-  //String _cardNumber = '';
+
   String expiryDate = '';
   String cardHolderName = '';
   String cvvCode = '';
@@ -130,9 +126,7 @@ class _HomePageState extends State<HomePage> {
       _cardNumberController.text = _scanResult!.cardNumber.number;
       cardNumber = _scanResult!.cardNumber.number;
     });
-    _formKey.currentState!.validate();
-    // onCreditCardModelChange(CreditCardModel(_scanResult!.cardNumber.number,
-    //     expiryDate, cardHolderName, cvvCode, isCvvFocused));
+
     print(_scanResult);
   }
 
@@ -177,18 +171,6 @@ class _HomePageState extends State<HomePage> {
       _cards = cards;
     });
   }
-
-  // void onCreditCardModelChange(CreditCardModel? creditCardModel) {
-  //   print("Credit Card Model Change!");
-  //   setState(() {
-  //     cardNumber = creditCardModel!.cardNumber;
-  //     _cardNumber = creditCardModel.cardNumber;
-  //     expiryDate = creditCardModel.expiryDate;
-  //     cardHolderName = creditCardModel.cardHolderName;
-  //     cvvCode = creditCardModel.cvvCode;
-  //     isCvvFocused = creditCardModel.isCvvFocused;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -395,11 +377,7 @@ class _HomePageState extends State<HomePage> {
           resizeToAvoidBottomInset: true,
           body: SingleChildScrollView(
             child: Container(
-              // height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              // padding: EdgeInsets.only(
-              //   bottom: MediaQuery.of(context).viewInsets.bottom,
-              // ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 //creates the card widget seen at the top of the form
@@ -508,8 +486,6 @@ class _HomePageState extends State<HomePage> {
                                             convertYearTo4Digits(year);
                                         if ((fourDigitsYear < 1) ||
                                             (fourDigitsYear > 2099)) {
-                                          // We are assuming a valid should be between 1 and 2099.
-                                          // Note that, it's valid doesn't mean that it has not expired.
                                           return 'Expiry year is invalid';
                                         }
                                         if (!hasDateExpired(month, year)) {
@@ -622,7 +598,7 @@ class _HomePageState extends State<HomePage> {
 
                                     _selectedIndex = 1;
                                     _loadCards();
-                                    //_formKey.currentState?.reset();
+
                                     _cardNumberController.clear();
                                     _expiryDateController.clear();
                                     _cvvController.clear();
