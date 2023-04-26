@@ -16,4 +16,5 @@ To install the application, users can download the file from the GitHub reposito
 # Authors 
 
 Main Developer and Owner - [Enoch Foakye](https://github.com/enochfoakye)
+
 Consultant -[Tolly765](https://github.com/tolly765)
