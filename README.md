@@ -6,16 +6,10 @@ Mobile App that Encrypts and Stores Bank Card Details
 
 Watch the video below to find out how to use Encryptous.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-- 
+https://user-images.githubusercontent.com/57646453/234714858-375afb2a-d182-4a5f-9037-005d54ea0223.mp4
 
 
+#Installation
+To install the application, users can download the file from the GitHub repository and install it on their Android device. The application requires Android 7.0 or later and does not require any special permissions.
 
-
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
