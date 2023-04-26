@@ -2,7 +2,7 @@
 
 This is a Mobile App that Encrypts and Stores Bank Card Details locally on Android devices 
 
-## Getting Started
+## How To Use Encryptous
 
 Watch the video below to find out how to use Encryptous.
 
@@ -15,5 +15,5 @@ To install the application, users can download the file from the GitHub reposito
 
 # Authors 
 
-[Enoch Foakye](https://github.com/enochfoakye)
-
+Main Developer and Owner - [Enoch Foakye](https://github.com/enochfoakye)
+Consultant -[Tolly765](https://github.com/tolly765)
