@@ -1,6 +1,6 @@
 # Encryptous
 
-Mobile App that Encrypts and Stores Bank Card Details
+This is a Mobile App that Encrypts and Stores Bank Card Details locally on Android devices 
 
 ## Getting Started
 
@@ -12,4 +12,8 @@ https://user-images.githubusercontent.com/57646453/234714858-375afb2a-d182-4a5f-
 
 # Installation
 To install the application, users can download the file from the GitHub repository and install it on their Android device. The application requires Android 7.0 or later and does not require any special permissions.
+
+# Authors 
+
+[Enoch Foakye](https://github.com/enochfoakye)
 
